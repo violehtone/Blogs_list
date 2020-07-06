@@ -20,11 +20,13 @@ test('blogs contain id field', async () => {
     expect(blog.id !== undefined)
     expect(blog._id) === undefined
   })
-  
+
 })
 
-// Additional test for the post method
+// Exercise 4.10
 test('a valid blog can be added', async() => {
+  const initialBlogs = await api.get('/api/blogs')
+
   const newBlog = {
     title: 'a new blog',
     author: 'great duded',
@@ -39,6 +41,8 @@ test('a valid blog can be added', async() => {
     .expect('Content-Type', /application\/json/)
 
   const response = await api.get('/api/blogs')
+  expect(initialBlogs.length + 1 === response.length)
+
   const titles = response.body.map(r => r.title)
   expect(titles).toContain('a new blog')
 })
