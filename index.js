@@ -2,6 +2,7 @@
 Running the program:
 $ npm dev <- Runs the program in the development mode
 $ npm start <- Runs the program
+$ npm test <- runs all the tests
 */
 const app = require('./app')
 require('dotenv').config()
