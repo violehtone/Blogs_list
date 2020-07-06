@@ -25,11 +25,18 @@ blogsRouter.post('/', async(request, response) => {
 })
 
 // PUT - update an existing blog
-
+blogsRouter.put('/', async(request, response) => {
+  const blog = new Blog(request.body)
+  await Blog.findByIdAndUpdate(request.params.id, blog, { new: true})
+  response.status(204).end()
+})
 
 
 // DELETE - delete an existing blog
-
+blogsRouter.delete('/:id', async(request, response) => {
+  await Blog.findByIdAndRemove(request.params.id)
+  response.status(204).end()
+})
 
   
 module.exports = blogsRouter

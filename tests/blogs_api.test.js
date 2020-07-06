@@ -1,7 +1,6 @@
 const supertest = require('supertest')
 const mongoose = require('mongoose')
 const app = require('../app')
-
 const api = supertest(app)
 
 // Exercise 4.8
@@ -74,15 +73,58 @@ test('the likes has default value of 0', async() => {
     return blog.title === 'nobody likes this blog'
   })
 
-  console.log(fetchedBlog)
-  expect(fetchedBlog.likes === 0)
+  expect(fetchedBlog.likes === 0)  
+})
+
+// Exercise 4.12
+test('returns 400 if title or url are missing', async() => {
+  const invalidBlog = {
+    author: 'John Smith',
+    url: 'www.niceblog.com',
+    likes: 10
+  }
+
+  const invalidBlog2 = {
+    title: 'nobody likes this blog',
+    author: 'John Smith',
+    likes: 10
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(invalidBlog)
+    .expect(500)
+
+  await api
+    .post('/api/blogs')
+    .send(invalidBlog2)
+    .expect(500)
+})
+
+// Exercise 4.13
+test('delete all created blogs during the tests', async() => {
+  const initialBlogs = await api.get('/api/blogs')
+
+  const toBeDeletedBlogs = initialBlogs.body.filter(blog => {
+    return (blog.title === 'nobody likes this blog' ||
+           blog.title === 'a new blog')
+  })
+
+  for(const blog of toBeDeletedBlogs) {
+    await api
+      .delete(`/api/blogs/${blog.id}`)
+      .expect(204)
+  }
+
+  console.log('deleted blogs successfully')
+
+  const blogsInTheEnd = await api.get('/api/blogs')
+
+  console.log('#of blogs at start and in the end: ', initialBlogs.body.length, blogsInTheEnd.body.length)
+  expect(initialBlogs.body.length > blogsInTheEnd.body.length)
 })
 
 
 afterAll(() => {
   mongoose.connection.close()
 })
-
-/*Test that the unique identifier property of blogs is
-  named 'id' (by default it is '_id')
-*/
