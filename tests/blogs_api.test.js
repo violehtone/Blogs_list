@@ -101,13 +101,59 @@ test('returns 400 if title or url are missing', async() => {
     .expect(500)
 })
 
+// Exercise 4.14
+test('a blog can be updated', async () => {
+
+  // Create a new blog
+  const newBlog = {
+    title: 'test blog for PUT',
+    author: 'great dude',
+    url: 'www.bestblog.com',
+    likes: 10
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  // Fetch the id of the newly created blog
+  const response = await api.get('/api/blogs')
+  const fetchedBlog = response.body.filter(blog => {
+    return blog.title = 'test blog for PUT'
+  })
+
+  // Update the newly created blog
+  const updatedBlog = {
+    title: 'updated test blog for PUT',
+    author: 'great dude',
+    url: 'www.bestblog.com',
+    likes: 10
+  }
+
+  await api
+    .put(`/api/blogs/${fetchedBlog[0].id}`)
+    .send(updatedBlog)
+    .expect(204)
+  
+  // Check that the updated blog exists
+  const updatedResponse = await api.get('/api/blogs')
+
+  const titles = updatedResponse.body.map(r => r.title)
+  expect(titles).toContain('updated test blog for PUT')
+})
+
+
 // Exercise 4.13
 test('delete all created blogs during the tests', async() => {
   const initialBlogs = await api.get('/api/blogs')
 
   const toBeDeletedBlogs = initialBlogs.body.filter(blog => {
     return (blog.title === 'nobody likes this blog' ||
-           blog.title === 'a new blog')
+           blog.title === 'a new blog' ||
+           blog.title === 'test blog for PUT' ||
+           blog.title === 'updated test blog for PUT')
   })
 
   for(const blog of toBeDeletedBlogs) {
