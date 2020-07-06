@@ -29,7 +29,7 @@ test('a valid blog can be added', async() => {
 
   const newBlog = {
     title: 'a new blog',
-    author: 'great duded',
+    author: 'great dude',
     url: 'www.bestblog.com',
     likes: 10
   }
@@ -45,7 +45,39 @@ test('a valid blog can be added', async() => {
 
   const titles = response.body.map(r => r.title)
   expect(titles).toContain('a new blog')
+
+  const createdBlog = response.body.filter(blog => {
+    return blog.title = 'a new blog'
+  })
+
+  createdBlog.forEach(blog => {
+    expect(blog.likes === 10)
+  })
+
 })
+
+// Exercise 4.11
+test('the likes has default value of 0', async() => {
+  const noLikeBlog = {
+    title: 'nobody likes this blog',
+    author: 'John Smith',
+    url: 'www.niceblog.com'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(noLikeBlog)
+    .expect(201)
+  
+  const response = await api.get('/api/blogs')
+  const fetchedBlog = response.body.filter(blog => {
+    return blog.title === 'nobody likes this blog'
+  })
+
+  console.log(fetchedBlog)
+  expect(fetchedBlog.likes === 0)
+})
+
 
 afterAll(() => {
   mongoose.connection.close()
