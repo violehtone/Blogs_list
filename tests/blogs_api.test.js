@@ -12,6 +12,17 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
+// Exercise 4.9
+test('blogs contain id field', async () => {
+  const response = await api.get('/api/blogs')
+
+  response.body.forEach(blog => {
+    expect(blog.id !== undefined)
+    expect(blog._id) === undefined
+  })
+  
+})
+
 // Additional test for the post method
 test('a valid blog can be added', async() => {
   const newBlog = {
