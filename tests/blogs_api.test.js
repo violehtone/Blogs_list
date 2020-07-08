@@ -120,9 +120,7 @@ test('a blog can be updated', async () => {
 
   // Fetch the id of the newly created blog
   const response = await api.get('/api/blogs')
-  const fetchedBlog = response.body.filter(blog => {
-    return blog.title = 'test blog for PUT'
-  })
+  let fetchedBlog = response.body[response.body.length - 1]
 
   // Update the newly created blog
   const updatedBlog = {
@@ -133,7 +131,7 @@ test('a blog can be updated', async () => {
   }
 
   await api
-    .put(`/api/blogs/${fetchedBlog[0].id}`)
+    .put(`/api/blogs/${fetchedBlog.id}`)
     .send(updatedBlog)
     .expect(204)
   
